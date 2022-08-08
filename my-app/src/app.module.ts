@@ -15,7 +15,7 @@ import { AuthModule } from './auth/auth.module';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: 'password',
+      password: '',
       database: 'test',
       models: [User],
       autoLoadModels: true,
