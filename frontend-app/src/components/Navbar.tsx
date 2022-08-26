@@ -10,11 +10,13 @@ import {
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import { useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
+import { useCookies } from "react-cookie";
 
 const Navbar = () => {
   let navigate = useNavigate();
   let userInfo: any;
-  const token: any = localStorage.getItem("token");
+  const [cookies, setCookies, removeCookie] = useCookies();
+  const token: any = cookies.token;
   if (token != null) {
     userInfo = jwtDecode(token);
   }
@@ -61,7 +63,7 @@ const Navbar = () => {
               underline="none"
               color="inherit"
               onClick={() => {
-                localStorage.removeItem("token");
+                removeCookie("token");
                 navigate("/login");
               }}
             >

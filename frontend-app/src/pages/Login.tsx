@@ -19,12 +19,13 @@ import { Input, InputBase } from "@mui/material";
 import { InputUnstyled } from "@mui/base";
 import { toast } from "react-toastify";
 import Navbar from "../components/Navbar";
+import { useCookies } from "react-cookie";
 
 const Login = () => {
   let navigate = useNavigate();
   let email: any = useRef();
   let password: any = useRef();
-
+  const [cookies, setCookies] = useCookies(["token"]);
   const loginApp = async () => {
     if (email.current.value == "" || password.current.value == "") {
       toast.info("Please fill the Information");
@@ -34,7 +35,7 @@ const Login = () => {
         email: email.current.value,
         password: password.current.value,
       });
-      localStorage.setItem("token", res.data.access_token);
+      setCookies("token", res.data.access_token, { path: "/", maxAge: 300 });
       toast.success("Login Successfully");
       navigate("/");
     } catch (error: any) {

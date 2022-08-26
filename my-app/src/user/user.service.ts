@@ -1,8 +1,8 @@
-import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateUserDto } from './dto/create-user.dto';
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { User } from './models/user.model';
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/sequelize";
+import { User } from "./models/user.model";
 
 @Injectable()
 export class UserService {
@@ -15,13 +15,13 @@ export class UserService {
       throw error;
     }
   }
-  async getUser(userId: number, name: string) {
+  async getUser(userId: number) {
     try {
       let result = await this.userModel.findOne({
-        where: { id: userId, name: name },
+        where: { id: userId },
       });
       if (!result) {
-        return { error: 'User Not found' };
+        return { error: "User Not found" };
       }
       return result;
     } catch (error) {
@@ -42,15 +42,15 @@ export class UserService {
         { ...updateUserDto },
         {
           where: { id: userId },
-        },
+        }
       );
       if (user.includes(1)) {
         return {
-          message: 'User Updated successfully',
+          message: "User Updated successfully",
           count: user.includes(1),
         };
       }
-      return { message: 'User not found', count: user.includes(1) };
+      return { message: "User not found", count: user.includes(1) };
     } catch (error) {
       throw error;
     }
@@ -59,9 +59,9 @@ export class UserService {
     try {
       let result = await this.userModel.destroy({ where: { id: userId } });
       if (result > 0) {
-        return { message: 'Deleted successfully', count: result };
+        return { message: "Deleted successfully", count: result };
       }
-      return { message: 'Items Not found' };
+      return { message: "Items Not found" };
     } catch (error) {
       throw error;
     }
