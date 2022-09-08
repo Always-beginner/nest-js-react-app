@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import {
   Box,
   Button,
@@ -15,19 +15,17 @@ import custom_axios from "../axios/axiosSetup";
 import { ApiConstants } from "../api/ApiConstants";
 import { useCookies } from "react-cookie";
 import EditIcon from "@mui/icons-material/Edit";
+import {
+  useAddUserMutation,
+  useUpdateUserMutation,
+} from "../store/userModel/user-api-slice";
 
-interface props {
+interface ModelProps {
   open: boolean;
   onClose: any;
   userData: any;
-  reloadTable: any;
 }
-const AddModal: React.FC<props> = ({
-  open,
-  onClose,
-  userData,
-  reloadTable,
-}) => {
+const AddModal = (props: ModelProps) => {
   const style = {
     position: "absolute" as "absolute",
     top: "50%",
@@ -42,7 +40,7 @@ const AddModal: React.FC<props> = ({
     flexDirection: "column",
     display: "flex",
   };
-  const onReload = () => reloadTable();
+
   const [cookies, setCookies] = useCookies();
 
   const token = cookies.token;
@@ -50,7 +48,11 @@ const AddModal: React.FC<props> = ({
   let email: any = useRef();
   let password: any = useRef();
 
-  const addUser = async () => {
+  // add new user
+  const [addUser] = useAddUserMutation();
+  // edit user
+  const [updateUser] = useUpdateUserMutation();
+  const addUser2 = async () => {
     if (
       userName.current.value == "" ||
       email.current.value == "" ||
@@ -58,31 +60,25 @@ const AddModal: React.FC<props> = ({
     ) {
       toast.info("Please fill the Information");
     } else {
-      try {
-        const res = await custom_axios.post(
-          ApiConstants.USER.ADD_USER,
-          {
-            name: userName.current.value,
-            email: email.current.value,
-            password: password.current.value,
-          },
-          { headers: { Authorization: "Bearer " + token } }
-        );
-        onClose();
-        toast.success("User Add Successfully");
-        onReload();
-      } catch (error: any) {
-        if (error.response.data.statusCode == 401) {
-          toast.warn(error.response.data.message.toString());
-        } else if (error.response.data.statusCode == 400) {
-          toast.warn(error.response.data.message.toString());
-        }
-      }
+      await addUser({
+        token: token,
+        userData: {
+          name: userName.current.value,
+          email: email.current.value,
+          password: password.current.value,
+        },
+      })
+        .unwrap()
+        .then((payload) => {
+          props.onClose();
+          toast.success("User Add Successfully");
+        })
+        .catch((error) => toast.error(error.data.message.toString()));
     }
   };
   // update user
   const editUser = async () => {
-    if (userData == null || undefined) {
+    if (props.userData == null || undefined) {
       toast.info("User not found");
     }
     if (
@@ -92,41 +88,38 @@ const AddModal: React.FC<props> = ({
     ) {
       toast.info("Please fill the Information");
     } else {
-      try {
-        const res = await custom_axios.patch(
-          ApiConstants.USER.UPDATE_USER(userData.id),
-          {
-            name: userName.current.value,
-            email: email.current.value,
-            password: password.current.value,
-          },
-          { headers: { Authorization: "Bearer " + token } }
-        );
-        onClose();
-        toast.success("User Update Successfully");
-        onReload();
-      } catch (error: any) {
-        if (error.response.data.statusCode == 401) {
-          toast.warn(error.response.data.message.toString());
-        } else if (error.response.data.statusCode == 400) {
-          toast.warn(error.response.data.message.toString());
-        }
-      }
+      updateUser({
+        token: token,
+        userData: {
+          name: userName.current.value,
+          email: email.current.value,
+          password: password.current.value,
+        },
+        userId: props.userData.id,
+      })
+        .unwrap()
+        .then(() => {
+          props.onClose();
+          toast.success("Updated Successfully");
+        })
+        .catch((error) => toast.error(error.data.message.toString()));
     }
   };
   return (
     <div>
-      <Modal open={open} onClose={onClose}>
+      <Modal open={props.open} onClose={props.onClose}>
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h5" component="h1">
-            {userData.id == null || undefined || ""
+            {props.userData.id == null || undefined || ""
               ? "Add new User"
               : "Edit User"}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             <TextField
               defaultValue={
-                userData.id !== null || undefined || "" ? userData.name : ""
+                props.userData.id !== null || undefined || ""
+                  ? props.userData.name
+                  : ""
               }
               inputRef={userName}
               id="name"
@@ -137,7 +130,9 @@ const AddModal: React.FC<props> = ({
             ></TextField>
             <TextField
               defaultValue={
-                userData.id !== null || undefined || "" ? userData.email : ""
+                props.userData.id !== null || undefined || ""
+                  ? props.userData.email
+                  : ""
               }
               inputRef={email}
               sx={{ mt: 2 }}
@@ -150,7 +145,9 @@ const AddModal: React.FC<props> = ({
             ></TextField>
             <TextField
               defaultValue={
-                userData.id == null || undefined || "" ? "" : userData.password
+                props.userData.id == null || undefined || ""
+                  ? ""
+                  : props.userData.password
               }
               inputRef={password}
               sx={{ mt: 2 }}
@@ -158,18 +155,20 @@ const AddModal: React.FC<props> = ({
               fullWidth
               label="Password"
               type={
-                userData.id == null || undefined || "" ? "password" : "text"
+                props.userData.id == null || undefined || ""
+                  ? "password"
+                  : "text"
               }
               required
             ></TextField>
           </Typography>
           <Stack sx={{ mt: 2 }} direction="row" spacing={3}>
-            {userData.id == null || undefined || "" ? (
+            {props.userData.id == null || undefined || "" ? (
               <Button
                 color="success"
                 variant="outlined"
                 aria-label="logo"
-                onClick={addUser}
+                onClick={addUser2}
               >
                 Submit
                 <PersonAddIcon sx={{ ml: 1 }}></PersonAddIcon>
@@ -190,7 +189,7 @@ const AddModal: React.FC<props> = ({
               color="error"
               variant="outlined"
               aria-label="logo"
-              onClick={onClose}
+              onClick={props.onClose}
             >
               Cancel
               <CancelIcon sx={{ ml: 1 }}></CancelIcon>

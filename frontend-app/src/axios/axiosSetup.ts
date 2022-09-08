@@ -1,7 +1,5 @@
 import axios from "axios";
 
-const token: string = "";
-
 const custom_axios = axios.create({
   baseURL: process.env.REACT_APP_REACT_BASE_URL,
   headers: {

@@ -18,19 +18,26 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import AddModal from "./AddModal";
 import { useCookies } from "react-cookie";
-interface UserModel {
-  email: string;
-  id: number;
-  name: string;
-  password: string;
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { setUsers } from "../store/userModel/userModel-slice";
+import {
+  useDeleteUserMutation,
+  useGetAllUsersQuery,
+} from "../store/userModel/user-api-slice";
+
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query/react";
+
+interface deleteError {
+  data?: any;
+  message?: any;
 }
-interface props {
-  reload?: boolean;
-}
-const DataTable: React.FC = () => {
+const DataTable = () => {
   const [cookies, setCookies] = useCookies();
   const token = cookies.token;
-  const [data, setData] = useState<UserModel[]>([]);
+
+  const users = ([] = useAppSelector((state) => state.usersModel.users));
+
+  const dispatch = useAppDispatch();
   // modal open state
   const [open, setOpen] = useState<boolean>(false);
   const handleOpen = () => setOpen(true);
@@ -40,51 +47,32 @@ const DataTable: React.FC = () => {
   };
   const [userUpdate, setUserUpdate] = useState({});
 
-  const tableReload = () => getAllUsers();
   // get all user in table
-  const getAllUsers = async () => {
-    if (token != null) {
-      const tableData = await custom_axios.get(ApiConstants.USER.FIND_ALL, {
-        headers: { Authorization: "Bearer " + token },
-      });
-      setData(tableData.data);
-    } else {
-      console.log("token not found");
-    }
-  };
+  const { data, isLoading, isFetching } = useGetAllUsersQuery(token);
+  if (data && data.length > 0) dispatch(setUsers(data));
+  //delete user
+  const [deleteUser] = useDeleteUserMutation();
   // edit user in table
   const getUser = async (userId: number) => {
     if (userId != null || undefined) {
-      try {
-        const user = await custom_axios.get(
-          ApiConstants.USER.FIND_BY_ID(userId),
-          { headers: { Authorization: "Bearer " + token } }
-        );
-        setUserUpdate(user.data);
-        setOpen(true);
-      } catch (error) {
-        toast.error("User not found");
-      }
+      const findUser: any = users.find((user) => user.id == userId && user);
+      setUserUpdate(findUser);
+      setOpen(true);
+    } else {
+      toast.info("UserId not found");
     }
   };
   // delete user in table
-  const deleteUser = async (userId: number) => {
-    const userDelete = await custom_axios.delete(
-      ApiConstants.USER.DELETE_USER(userId),
-      {
-        headers: { Authorization: "Bearer " + token },
-      }
-    );
-    getAllUsers();
-    toast.success("User Deleted Successfully!!");
-  };
-
-  // reload with use effect
-  useEffect(() => {
-    if (data.length == 0) {
-      getAllUsers();
+  const deleteUser1 = async (userId: number) => {
+    if ((userId != null || undefined) && (token != null || undefined)) {
+      await deleteUser({ token, userId })
+        .unwrap()
+        .then((payload) => {
+          toast.success("Deleted Successfully");
+        })
+        .catch((error) => toast.error(error.data.message));
     }
-  }, []);
+  };
   return (
     <div>
       {token != null ? (
@@ -94,6 +82,7 @@ const DataTable: React.FC = () => {
         >
           <Table aria-label="simple table">
             <TableHead>
+              <TableRow>"Number of User fetch": {users.length}</TableRow>
               <TableRow>
                 <TableCell>Id</TableCell>
                 <TableCell>Email</TableCell>
@@ -115,12 +104,11 @@ const DataTable: React.FC = () => {
                   open={open}
                   onClose={handleClose}
                   userData={userUpdate}
-                  reloadTable={tableReload}
                 ></AddModal>
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((row: any) => (
+              {users.map((row: any) => (
                 <TableRow
                   key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -147,7 +135,7 @@ const DataTable: React.FC = () => {
                       color="error"
                       variant="outlined"
                       onClick={() => {
-                        deleteUser(row.id);
+                        deleteUser1(row.id);
                       }}
                     >
                       Delete
