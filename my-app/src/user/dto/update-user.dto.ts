@@ -1,6 +1,6 @@
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { Exclude, Expose } from 'class-transformer';
-import { IsEmail, IsOptional, IsString, MaxLength } from 'class-validator';
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
+import { Exclude, Expose } from "class-transformer";
+import { IsEmail, IsOptional, IsString, MaxLength } from "class-validator";
 
 @Exclude()
 export class UpdateUserDto {
@@ -13,7 +13,7 @@ export class UpdateUserDto {
   @IsOptional()
   @MaxLength(50)
   @ApiProperty()
-  name?: string;
+  Name?: string;
 
   @Expose()
   @IsString()
@@ -21,11 +21,11 @@ export class UpdateUserDto {
   @IsEmail()
   @MaxLength(50)
   @ApiProperty()
-  email?: string;
+  email__c?: string;
 
   @Expose()
   @IsOptional()
   @MaxLength(50)
   @ApiProperty()
-  password?: string;
+  password__c?: string;
 }

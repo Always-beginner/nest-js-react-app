@@ -5,6 +5,7 @@ import { AppService } from "./app.service";
 import { User } from "./user/models/user.model";
 import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
+import { JsForceModule } from "@ntegral/nestjs-force";
 
 @Module({
   imports: [
@@ -20,6 +21,14 @@ import { AuthModule } from "./auth/auth.module";
       models: [User],
       autoLoadModels: true,
       synchronize: true,
+    }),
+    JsForceModule.forRoot({
+      username: "beyounick00724@gmail.com",
+      password: "nick@5525",
+      security_token: "5rkt1V1aEYLDcRo56bNO5W2Q",
+      options: {
+        loginUrl: "https://binarybits-dev-ed.my.salesforce.com",
+      },
     }),
   ],
   controllers: [AppController],

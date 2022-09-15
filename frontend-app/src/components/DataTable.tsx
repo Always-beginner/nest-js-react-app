@@ -25,12 +25,6 @@ import {
   useGetAllUsersQuery,
 } from "../store/userModel/user-api-slice";
 
-import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query/react";
-
-interface deleteError {
-  data?: any;
-  message?: any;
-}
 const DataTable = () => {
   const [cookies, setCookies] = useCookies();
   const token = cookies.token;
@@ -55,7 +49,7 @@ const DataTable = () => {
   // edit user in table
   const getUser = async (userId: number) => {
     if (userId != null || undefined) {
-      const findUser: any = users.find((user) => user.id == userId && user);
+      const findUser: any = users.find((user) => user.id__c == userId && user);
       setUserUpdate(findUser);
       setOpen(true);
     } else {
@@ -113,10 +107,10 @@ const DataTable = () => {
                   key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell>{row.id}</TableCell>
-                  <TableCell>{row.email}</TableCell>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.password}</TableCell>
+                  <TableCell>{row.id__c}</TableCell>
+                  <TableCell>{row.email__c}</TableCell>
+                  <TableCell>{row.Name}</TableCell>
+                  <TableCell>{row.password__c}</TableCell>
                   <TableCell>
                     <Button
                       sx={{ mr: 2 }}
@@ -124,7 +118,7 @@ const DataTable = () => {
                       aria-label="logo"
                       color="warning"
                       variant="outlined"
-                      onClick={() => getUser(row.id)}
+                      onClick={() => getUser(row.id__c)}
                     >
                       edit
                       <EditIcon />
@@ -135,7 +129,7 @@ const DataTable = () => {
                       color="error"
                       variant="outlined"
                       onClick={() => {
-                        deleteUser1(row.id);
+                        deleteUser1(row.id__c);
                       }}
                     >
                       Delete

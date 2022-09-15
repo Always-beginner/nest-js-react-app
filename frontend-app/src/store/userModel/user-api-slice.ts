@@ -6,10 +6,10 @@ import {
 } from "@reduxjs/toolkit/query/react";
 
 export interface UserModel {
-  email: string;
-  id: number;
-  name: string;
-  password: string;
+  email__c: string;
+  id__c: number;
+  Name: string;
+  password__c: string;
 }
 export interface CustomErrors {
   data: {

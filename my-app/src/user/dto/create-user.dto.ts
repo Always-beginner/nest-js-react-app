@@ -1,12 +1,12 @@
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { Exclude, Expose } from 'class-transformer';
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
+import { Exclude, Expose } from "class-transformer";
 import {
   IsEmail,
   IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
-} from 'class-validator';
+} from "class-validator";
 
 @Exclude()
 export class CreateUserDto {
@@ -19,7 +19,7 @@ export class CreateUserDto {
   @IsOptional()
   @MaxLength(50)
   @ApiProperty()
-  name?: string;
+  Name?: string;
 
   @Expose()
   @IsString()
@@ -27,11 +27,11 @@ export class CreateUserDto {
   @IsEmail()
   @MaxLength(50)
   @ApiProperty()
-  email!: string;
+  email__c!: string;
 
   @Expose()
   @IsNotEmpty()
   @MaxLength(50)
   @ApiProperty()
-  password!: string;
+  password__c!: string;
 }

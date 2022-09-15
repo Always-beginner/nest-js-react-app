@@ -3,63 +3,73 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { User } from "./models/user.model";
+import { Client, InjectJsForce } from "@ntegral/nestjs-force";
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User) private userModel: typeof User) {}
-
-  async getAllUser(): Promise<User[]> {
+  constructor(
+    @InjectModel(User) private userModel: typeof User,
+    @InjectJsForce() private readonly client: Client
+  ) {}
+  async getAllUser() {
     try {
-      return await this.userModel.findAll();
+      const res = await this.client.conn.sobject("users__c").find();
+      return res;
+      // return await this.userModel.findAll();
     } catch (error) {
       throw error;
     }
   }
   async getUser(userId: number) {
     try {
-      let result = await this.userModel.findOne({
-        where: { id: userId },
-      });
-      if (!result) {
+      const res = await this.client.conn
+        .sobject("users__c")
+        .findOne({ id__c: userId });
+      if (!res) {
         return { error: "User Not found" };
       }
-      return result;
+      return res;
     } catch (error) {
       throw error;
     }
   }
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
+  async createUser(createUserDto: CreateUserDto) {
     try {
-      let result = await this.userModel.create({ ...createUserDto });
-      return result;
+      let result = await this.client.conn
+        .sobject("users__c")
+        .create(createUserDto);
+      if (result.success) {
+        return { message: "User Create Successfully" };
+      }
     } catch (error) {
       throw error;
     }
   }
   async updateUser(userId: number, updateUserDto: UpdateUserDto) {
     try {
-      let user = await this.userModel.update(
-        { ...updateUserDto },
-        {
-          where: { id: userId },
-        }
-      );
-      if (user.includes(1)) {
+      let user = await this.client.conn
+        .sobject("users__c")
+        .find({ id__c: userId })
+        .update(updateUserDto);
+      console.log(JSON.stringify(user));
+      if (user) {
         return {
           message: "User Updated successfully",
-          count: user.includes(1),
         };
       }
-      return { message: "User not found", count: user.includes(1) };
+      return { message: "User not found" };
     } catch (error) {
       throw error;
     }
   }
   async deleteUser(userId: number) {
     try {
-      let result = await this.userModel.destroy({ where: { id: userId } });
-      if (result > 0) {
-        return { message: "Deleted successfully", count: result };
+      let result = await this.client.conn
+        .sobject("users__c")
+        .find({ id__c: userId })
+        .destroy();
+      if (result) {
+        return { message: "Deleted successfully" };
       }
       return { message: "Items Not found" };
     } catch (error) {
