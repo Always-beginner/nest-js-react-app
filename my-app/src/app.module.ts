@@ -23,11 +23,11 @@ import { JsForceModule } from "@ntegral/nestjs-force";
       synchronize: true,
     }),
     JsForceModule.forRoot({
-      username: "beyounick00724@gmail.com",
-      password: "nick@5525",
-      security_token: "5rkt1V1aEYLDcRo56bNO5W2Q",
+      username: "your your name for salesforce provided",
+      password: "your password",
+      security_token: "security token form salesforce provided",
       options: {
-        loginUrl: "https://binarybits-dev-ed.my.salesforce.com",
+        loginUrl: "loginUrl provided by salesforce",
       },
     }),
   ],
