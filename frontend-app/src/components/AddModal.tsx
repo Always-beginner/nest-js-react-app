@@ -95,7 +95,7 @@ const AddModal = (props: ModelProps) => {
           email__c: email.current.value,
           password__c: password.current.value,
         },
-        userId: props.userData.id__c,
+        userId: props.userData.Id,
       })
         .unwrap()
         .then(() => {
@@ -110,14 +110,14 @@ const AddModal = (props: ModelProps) => {
       <Modal open={props.open} onClose={props.onClose}>
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h5" component="h1">
-            {props.userData.id__c == null || undefined || ""
+            {props.userData.Id == null || undefined || ""
               ? "Add new User"
               : "Edit User"}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             <TextField
               defaultValue={
-                props.userData.id__c !== null || undefined || ""
+                props.userData.Id !== null || undefined || ""
                   ? props.userData.Name
                   : ""
               }
@@ -130,7 +130,7 @@ const AddModal = (props: ModelProps) => {
             ></TextField>
             <TextField
               defaultValue={
-                props.userData.id__c !== null || undefined || ""
+                props.userData.Id !== null || undefined || ""
                   ? props.userData.email__c
                   : ""
               }
@@ -145,7 +145,7 @@ const AddModal = (props: ModelProps) => {
             ></TextField>
             <TextField
               defaultValue={
-                props.userData.id__c == null || undefined || ""
+                props.userData.Id == null || undefined || ""
                   ? ""
                   : props.userData.password__c
               }
@@ -155,7 +155,7 @@ const AddModal = (props: ModelProps) => {
               fullWidth
               label="Password"
               type={
-                props.userData.id__c == null || undefined || ""
+                props.userData.Id == null || undefined || ""
                   ? "password"
                   : "text"
               }
@@ -163,7 +163,7 @@ const AddModal = (props: ModelProps) => {
             ></TextField>
           </Typography>
           <Stack sx={{ mt: 2 }} direction="row" spacing={3}>
-            {props.userData.id__c == null || undefined || "" ? (
+            {props.userData.Id == null || undefined || "" ? (
               <Button
                 color="success"
                 variant="outlined"

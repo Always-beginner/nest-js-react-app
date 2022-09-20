@@ -11,7 +11,7 @@ import { LocalStrategy } from './local.strategy';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([User]),
+    // SequelizeModule.forFeature([User]),
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,

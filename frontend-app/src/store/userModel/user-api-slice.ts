@@ -7,7 +7,7 @@ import {
 
 export interface UserModel {
   email__c: string;
-  id__c: number;
+  Id: string;
   Name: string;
   password__c: string;
 }
@@ -32,6 +32,14 @@ export const apiSlice = createApi({
       },
       providesTags: [{ type: "Users", id: "List" }],
     }),
+    getProduct : builder.query({
+      query: (body:{token: string,userId: string})=>{
+        return {
+          url: `/Products/${body.userId}`,
+          headers: { Authorization: "Bearer " + body.token },
+        }
+      }
+    }),
     addUser: builder.mutation({
       query: (body: { token: string; userData: Partial<UserModel> }) => {
         return {
@@ -47,7 +55,7 @@ export const apiSlice = createApi({
       query: (body: {
         token: string;
         userData: Partial<UserModel>;
-        userId: number;
+        userId: string;
       }) => {
         return {
           url: `updateUser/${body.userId}`,
@@ -59,7 +67,7 @@ export const apiSlice = createApi({
       invalidatesTags: [{ type: "Users", id: "List" }],
     }),
     deleteUser: builder.mutation({
-      query: (body: { token: string; userId: number }) => {
+      query: (body: { token: string; userId: string }) => {
         return {
           url: `deleteUser/${body.userId}`,
           method: "delete",
@@ -76,4 +84,5 @@ export const {
   useAddUserMutation,
   useDeleteUserMutation,
   useUpdateUserMutation,
+  useGetProductQuery
 } = apiSlice;

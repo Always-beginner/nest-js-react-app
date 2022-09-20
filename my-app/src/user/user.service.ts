@@ -1,15 +1,14 @@
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/sequelize";
-import { User } from "./models/user.model";
+// import { InjectModel } from "@nestjs/sequelize";
+// import { User } from "./models/user.model";
 import { Client, InjectJsForce } from "@ntegral/nestjs-force";
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(User) private userModel: typeof User,
-    @InjectJsForce() private readonly client: Client
+    @InjectJsForce() private readonly client: Client // @InjectModel(User) private userModel: typeof User,
   ) {}
   async getAllUser() {
     try {
@@ -20,11 +19,11 @@ export class UserService {
       throw error;
     }
   }
-  async getUser(userId: number) {
+  async getUser(userId: string) {
     try {
       const res = await this.client.conn
-        .sobject("users__c")
-        .findOne({ id__c: userId });
+        .sobject("products")
+        .findOne({ Id: userId });
       if (!res) {
         return { error: "User Not found" };
       }
@@ -32,6 +31,12 @@ export class UserService {
     } catch (error) {
       throw error;
     }
+  }
+  async getProducts(userId: string) {
+    const products = await this.client.conn
+      .sobject("product__c")
+      .find({ user__c: userId });
+    return products;
   }
   async createUser(createUserDto: CreateUserDto) {
     try {
@@ -45,13 +50,12 @@ export class UserService {
       throw error;
     }
   }
-  async updateUser(userId: number, updateUserDto: UpdateUserDto) {
+  async updateUser(userId: string, updateUserDto: UpdateUserDto) {
     try {
       let user = await this.client.conn
         .sobject("users__c")
-        .find({ id__c: userId })
+        .find({ Id: userId })
         .update(updateUserDto);
-      console.log(JSON.stringify(user));
       if (user) {
         return {
           message: "User Updated successfully",
@@ -62,11 +66,11 @@ export class UserService {
       throw error;
     }
   }
-  async deleteUser(userId: number) {
+  async deleteUser(userId: string) {
     try {
       let result = await this.client.conn
         .sobject("users__c")
-        .find({ id__c: userId })
+        .find({ Id: userId })
         .destroy();
       if (result) {
         return { message: "Deleted successfully" };

@@ -1,6 +1,6 @@
-import { User } from "./../user/models/user.model";
+// import { User } from "./../user/models/user.model";
 import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/sequelize";
+// import { InjectModel } from "@nestjs/sequelize";
 import { JwtService } from "@nestjs/jwt";
 import { LoginAuthDto } from "./dto/login.dto";
 import * as sf from "jsforce";
@@ -8,11 +8,10 @@ import { Client, InjectJsForce } from "@ntegral/nestjs-force";
 @Injectable()
 export class AuthService {
   constructor(
-    // @InjectModel(User) private userModel: typeof User,
     @InjectJsForce() private readonly client: Client,
+    // @InjectModel(User) private userModel: typeof User,
     private jwtService: JwtService
   ) {}
-
   async findByEmail(email: string) {
     const res = await this.client.conn
       .sobject("users__c")

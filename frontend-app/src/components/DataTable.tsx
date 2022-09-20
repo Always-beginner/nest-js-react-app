@@ -9,10 +9,8 @@ import {
   IconButton,
   Button,
 } from "@mui/material";
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { ApiConstants } from "../api/ApiConstants";
-import custom_axios from "../axios/axiosSetup";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddBoxIcon from "@mui/icons-material/AddBox";
@@ -23,12 +21,14 @@ import { setUsers } from "../store/userModel/userModel-slice";
 import {
   useDeleteUserMutation,
   useGetAllUsersQuery,
+  useGetProductQuery,
 } from "../store/userModel/user-api-slice";
-
+import SellIcon from "@mui/icons-material/Sell";
+import { useNavigate } from "react-router-dom";
 const DataTable = () => {
   const [cookies, setCookies] = useCookies();
   const token = cookies.token;
-
+  const navigate = useNavigate();
   const users = ([] = useAppSelector((state) => state.usersModel.users));
 
   const dispatch = useAppDispatch();
@@ -40,16 +40,24 @@ const DataTable = () => {
     setUserUpdate({});
   };
   const [userUpdate, setUserUpdate] = useState({});
+  const [userId, setUserId] = useState<string>();
 
+  // get products
+  const getProduct = (userId: string) => {
+    if (userId != null || undefined) {
+      console.log(userId);
+      setUserId(userId);
+    }
+  };
   // get all user in table
-  const { data, isLoading, isFetching } = useGetAllUsersQuery(token);
+  const { data } = useGetAllUsersQuery(token);
   if (data && data.length > 0) dispatch(setUsers(data));
   //delete user
   const [deleteUser] = useDeleteUserMutation();
   // edit user in table
-  const getUser = async (userId: number) => {
+  const getUser = async (userId: string) => {
     if (userId != null || undefined) {
-      const findUser: any = users.find((user) => user.id__c == userId && user);
+      const findUser: any = users.find((user) => user.Id == userId && user);
       setUserUpdate(findUser);
       setOpen(true);
     } else {
@@ -57,7 +65,7 @@ const DataTable = () => {
     }
   };
   // delete user in table
-  const deleteUser1 = async (userId: number) => {
+  const deleteUser1 = async (userId: string) => {
     if ((userId != null || undefined) && (token != null || undefined)) {
       await deleteUser({ token, userId })
         .unwrap()
@@ -107,7 +115,7 @@ const DataTable = () => {
                   key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell>{row.id__c}</TableCell>
+                  <TableCell>{row.Id}</TableCell>
                   <TableCell>{row.email__c}</TableCell>
                   <TableCell>{row.Name}</TableCell>
                   <TableCell>{row.password__c}</TableCell>
@@ -118,7 +126,7 @@ const DataTable = () => {
                       aria-label="logo"
                       color="warning"
                       variant="outlined"
-                      onClick={() => getUser(row.id__c)}
+                      onClick={() => getUser(row.Id)}
                     >
                       edit
                       <EditIcon />
@@ -129,11 +137,22 @@ const DataTable = () => {
                       color="error"
                       variant="outlined"
                       onClick={() => {
-                        deleteUser1(row.id__c);
+                        deleteUser1(row.Id);
                       }}
                     >
                       Delete
                       <DeleteIcon />
+                    </Button>
+                    <Button
+                      sx={{ ml: 2 }}
+                      size="small"
+                      aria-label="logo"
+                      color="info"
+                      variant="outlined"
+                      onClick={() => getProduct(row.Id)}
+                    >
+                      products
+                      <SellIcon />
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -144,7 +163,24 @@ const DataTable = () => {
       ) : (
         ""
       )}
+      {userId != null ? (
+        <Products token={token} userId={userId}></Products>
+      ) : (
+        ""
+      )}
     </div>
   );
 };
+interface productsModel {
+  token: string;
+  userId: string;
+}
+export const Products = (props: productsModel) => {
+  const { data } = useGetProductQuery({
+    token: props.token,
+    userId: props.userId,
+  });
+  return <div>{JSON.stringify(data)}</div>;
+};
+
 export default DataTable;

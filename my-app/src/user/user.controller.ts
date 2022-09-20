@@ -32,21 +32,26 @@ export class UserController {
     return this.userService.getAllUser();
   }
   @Get("/:userId")
-  @ApiParam({ name: "userId", type: "number" })
+  @ApiParam({ name: "userId", type: "string" })
   getUser(@Param() params) {
     return this.userService.getUser(params.userId);
+  }
+  @Get("/Products/:userId")
+  @ApiParam({ name: "userId", type: "string" })
+  getProducts(@Param() params) {
+    return this.userService.getProducts(params.userId);
   }
   @Post("/createUser")
   createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
   }
   @Patch("/updateUser/:userId")
-  @ApiParam({ name: "userId", type: "number" })
+  @ApiParam({ name: "userId", type: "string" })
   updateUser(@Param() params, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.updateUser(params.userId, updateUserDto);
   }
   @Delete("/deleteUser/:userId")
-  @ApiParam({ name: "userId", type: "number" })
+  @ApiParam({ name: "userId", type: "string" })
   deleteUser(@Param() params) {
     return this.userService.deleteUser(params.userId);
   }
