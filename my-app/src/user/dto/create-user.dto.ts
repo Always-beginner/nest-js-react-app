@@ -19,7 +19,7 @@ export class CreateUserDto {
   @IsOptional()
   @MaxLength(50)
   @ApiProperty()
-  Name?: string;
+  name?: string;
 
   @Expose()
   @IsString()
@@ -27,11 +27,11 @@ export class CreateUserDto {
   @IsEmail()
   @MaxLength(50)
   @ApiProperty()
-  email__c!: string;
+  email!: string;
 
   @Expose()
   @IsNotEmpty()
   @MaxLength(50)
   @ApiProperty()
-  password__c!: string;
+  password!: string;
 }

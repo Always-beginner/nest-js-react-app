@@ -1,0 +1,112 @@
+version: '3.8'
+services:
+  #dev frontend serivce
+  frontend-dev:
+    build:
+      context: ./frontend-app
+      dockerfile: Dockerfile
+      target: dev
+    working_dir: /app/frontend-app
+    ports:
+      - "5001:3000"
+    environment:
+      - REACT_APP_REACT_BASE_URL=http://backend-dev:3001
+    volumes:
+      - .:/app:delegated
+      - /app/node_modules
+    depends_on:
+      - backend-dev
+    networks:
+      - app-network
+    restart: always
+  # prod frontend serivce
+  # frontend-prod:
+  #   build:
+  #     context: ./frontend-app
+  #     dockerfile: Dockerfile
+  #     target: prod
+  #   ports:
+  #     - "5000:80"
+  #   environment:
+  #     - REACT_APP_REACT_BASE_URL=http://backend-prod:3000
+  #   depends_on:
+  #     - backend-prod
+  #   networks:
+  #     - app-network
+  #   restart: always
+  # #production service
+  # backend-prod:
+  #   build:
+  #     context: ./my-app
+  #     dockerfile: Dockerfile
+  #     target: prod
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - DB_HOST=db 
+  #     - DB_PORT=3306
+  #     - DB_USER=root
+  #     - DB_PASSWORD=password
+  #     - DB_NAME=prodDB
+  #     - APP_PORT=3000
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - app-network
+  # # #dev backend service
+  backend-dev:
+    build:
+      context: ./my-app
+      dockerfile: Dockerfile
+      target: dev
+    working_dir: /app/my-app
+    ports:
+      - "3001:3000"
+    environment:
+      - DB_HOST=db-dev 
+      - DB_PORT=3307
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=devDB
+      - APP_PORT=3000
+    command: [sh, -c, 'npm run start:dev']
+    volumes:
+      - .:/app:delegated
+      - /app/node_modules
+    depends_on:
+      - db-dev
+    networks:
+      - app-network
+  # prod db
+  # db:
+  #   image: mysql:8.0
+  #   ports:
+  #     - "3306:3306"
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=password
+  #     - MYSQL_DATABASE=prodDB 
+  #   volumes:
+  #     - db-data:/var/lib/mysql
+  #   networks:
+  #     - app-network
+  # stage db
+  db-dev:
+    image: mysql:8.0
+    ports:
+      - "3307:3307"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=devDB 
+      - MYSQL_TCP_PORT=3307
+    volumes:
+      - db-dev-data:/var/lib/mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  # db-data:
+  db-dev-data:

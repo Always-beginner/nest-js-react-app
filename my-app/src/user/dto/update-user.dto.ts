@@ -13,7 +13,7 @@ export class UpdateUserDto {
   @IsOptional()
   @MaxLength(50)
   @ApiProperty()
-  Name?: string;
+  name?: string;
 
   @Expose()
   @IsString()
@@ -21,11 +21,11 @@ export class UpdateUserDto {
   @IsEmail()
   @MaxLength(50)
   @ApiProperty()
-  email__c?: string;
+  email?: string;
 
   @Expose()
   @IsOptional()
   @MaxLength(50)
   @ApiProperty()
-  password__c?: string;
+  password?: string;
 }

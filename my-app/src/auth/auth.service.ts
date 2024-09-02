@@ -8,19 +8,19 @@ import { Client, InjectJsForce } from "@ntegral/nestjs-force";
 @Injectable()
 export class AuthService {
   constructor(
-    // @InjectModel(User) private userModel: typeof User,
-    @InjectJsForce() private readonly client: Client,
+    @InjectModel(User) private userModel: typeof User,
+    // @InjectJsForce() private readonly client: Client,
     private jwtService: JwtService
   ) {}
 
   async findByEmail(email: string) {
-    const res = await this.client.conn
-      .sobject("users__c")
-      .findOne({ email__c: email });
-    return res;
-    // return await this.userModel.findOne({    // used for sequelize for mysql database
-    //   where: { email },
-    // });
+    // const res = await this.client.conn
+    //   .sobject("users__c")
+    //   .findOne({ email__c: email });
+    // return res;
+    return await this.userModel.findOne({    // used for sequelize for mysql database
+      where: { email },
+    });
   }
 
   async validateUser(email: string, password: string) {

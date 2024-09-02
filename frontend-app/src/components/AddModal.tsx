@@ -63,9 +63,9 @@ const AddModal = (props: ModelProps) => {
       await addUser({
         token: token,
         userData: {
-          Name: userName.current.value,
-          email__c: email.current.value,
-          password__c: password.current.value,
+          name: userName.current.value,
+          email: email.current.value,
+          password: password.current.value,
         },
       })
         .unwrap()
@@ -91,11 +91,11 @@ const AddModal = (props: ModelProps) => {
       updateUser({
         token: token,
         userData: {
-          Name: userName.current.value,
-          email__c: email.current.value,
-          password__c: password.current.value,
+          name: userName.current.value,
+          email: email.current.value,
+          password: password.current.value,
         },
-        userId: props.userData.id__c,
+        userId: props.userData.id,
       })
         .unwrap()
         .then(() => {
@@ -110,15 +110,15 @@ const AddModal = (props: ModelProps) => {
       <Modal open={props.open} onClose={props.onClose}>
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h5" component="h1">
-            {props.userData.id__c == null || undefined || ""
+            {props.userData.id == null || undefined || ""
               ? "Add new User"
               : "Edit User"}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             <TextField
               defaultValue={
-                props.userData.id__c !== null || undefined || ""
-                  ? props.userData.Name
+                props.userData.id !== null || undefined || ""
+                  ? props.userData.name
                   : ""
               }
               inputRef={userName}
@@ -130,8 +130,8 @@ const AddModal = (props: ModelProps) => {
             ></TextField>
             <TextField
               defaultValue={
-                props.userData.id__c !== null || undefined || ""
-                  ? props.userData.email__c
+                props.userData.id !== null || undefined || ""
+                  ? props.userData.email
                   : ""
               }
               inputRef={email}
@@ -145,9 +145,9 @@ const AddModal = (props: ModelProps) => {
             ></TextField>
             <TextField
               defaultValue={
-                props.userData.id__c == null || undefined || ""
+                props.userData.id == null || undefined || ""
                   ? ""
-                  : props.userData.password__c
+                  : props.userData.password
               }
               inputRef={password}
               sx={{ mt: 2 }}
@@ -155,7 +155,7 @@ const AddModal = (props: ModelProps) => {
               fullWidth
               label="Password"
               type={
-                props.userData.id__c == null || undefined || ""
+                props.userData.id == null || undefined || ""
                   ? "password"
                   : "text"
               }
@@ -163,7 +163,7 @@ const AddModal = (props: ModelProps) => {
             ></TextField>
           </Typography>
           <Stack sx={{ mt: 2 }} direction="row" spacing={3}>
-            {props.userData.id__c == null || undefined || "" ? (
+            {props.userData.id == null || undefined || "" ? (
               <Button
                 color="success"
                 variant="outlined"
